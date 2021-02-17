@@ -35,7 +35,7 @@ def secant_method(f, p_0, p_1, N, e):
         f_p0 = f_p1
         p_1 = p_n
         f_p1 = f(p_n)
-    print(f"/nThe method failed after {N} iterations. ")
+    print(f"\nThe method failed after {N} iterations. ")
     return None
 
 # calling with lambda functions 

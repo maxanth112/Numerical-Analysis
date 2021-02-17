@@ -21,25 +21,27 @@ def false_position(f, p_0, p_1, N, e):
     approximation of the root p within the given tolerance. '''
     
     i = 2
-    f_p0 = f(p_0)
-    f_p1 = f(p_1)
+    q_0 = f(p_0)
+    q_1 = f(p_1)
     while i <= N:
-        p_n = p_1 - f_p1*(p_1 - p_0)/(f_p1 - f_p0)        
-        print(f'p_{str(i).ljust(2)} = {p_n:8.14f}')
+        p = p_1 - ( (p_1 - p_0) * q_1 )/( q_1 - q_0 )
+        print(f'p_{str(i).ljust(2)} = {p:8.14f}')
 
-        if abs(p_n - p_1) < e:            
+        if abs(p - p_1) < e:            
             print(f'\np found after {i} iterations.')
-            return p_n    
+            return p
         i += 1
-        f_pn = f(p_n)
-        if f_pn*f_p1 < 0:
+        q = f(p)
+
+        if q * q_1 < 0:
             p_0 = p_1
-            f_p0 = f_p1
-        p_1 = p_n
-        f_p1 = f_pn
-    print(f"/nThe method failed after {N} iterations. ")
+            q_0 = q_1
+        else:
+            p_1 = p
+            q_1 = q
+    print(f"\nThe method failed after {N} iterations. ")
     return None
 
 # calling with lambda functions 
-f = lambda x : math.cos(x) - x
-false_position(f, 0.5, math.pi/4, 20, 10e-7)
+fx = lambda x : math.tan(math.pi*x) - 6
+approx_root = false_position(fx,0.48,0,11,10e-100)

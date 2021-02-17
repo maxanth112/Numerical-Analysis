@@ -1,3 +1,5 @@
+import math 
+
 def bisection(f,a,b,N,e):
     ''' Max Wiesner 
         2/15/21
@@ -23,6 +25,7 @@ def bisection(f,a,b,N,e):
     fa = f(a)
     fb = f(b)
     if fa*fb >= 0:
+        print(f'fa = {fa}\nfb = {fb}\n')
         print("Criteria not met for bisection method.")
         return None
     if fa == 0:
@@ -51,5 +54,5 @@ def bisection(f,a,b,N,e):
     return None
 
 # calling with lambda functions 
-fx = lambda x : x**2 - x - 1
-approx_root = bisection(fx,1,2,100,10e-4)
+fx = lambda x : math.tan(math.pi*x) - 6
+approx_root = bisection(fx,0,0.5,11,10e-10)
