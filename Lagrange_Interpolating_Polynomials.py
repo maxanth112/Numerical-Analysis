@@ -1,3 +1,5 @@
+import sympy as sy
+
 class Point: 
     def __init__(self, x, fx):
         self.x = x
@@ -17,7 +19,7 @@ def lagrange_interpolation(p : list, x_p : float, n : int, p_out = True) -> floa
     p     : list of known unique points  
     x_p   : the point in question to be approximated 
     n     : the degree of the Lagrange polynomial to be constructed for the approximation
-    p_out : disable of enable a printout of the given problem, default is true
+    p_out : disable of enable a printout of the computed polynomial P_x, default is true
     
     --- Returns ---
     x_r : result, the approximated value using Lagrange interpolating polynomial of degree n '''
@@ -25,7 +27,8 @@ def lagrange_interpolation(p : list, x_p : float, n : int, p_out = True) -> floa
     if (len(p) < n): 
         print(f'Not enough known points provided for a lagrange interpolation of degree ${degree}')
     
-    x_r = 0.0
+    x = sy.Symbol('x')
+    Px = 0.0
     polynomial = ['']*n
     
     for i in range(n):
@@ -33,18 +36,30 @@ def lagrange_interpolation(p : list, x_p : float, n : int, p_out = True) -> floa
         L_i = 1
         for j in range(n):
             if i != j:
-                L_i *= (x_p - p[j].x) / (p[i].x - p[j].x)
+                L_i *= (x - p[j].x) / (p[i].x - p[j].x)
                 polynomial[i] += f'((x - {p[j].x})/({p[i].x} - {p[j].x}))'
                 
-        x_r += p[i].fx*L_i
+        Px += p[i].fx*L_i
         polynomial[i] = f'({p[i].fx:.5f})' + polynomial[i]
-    
-    # printing out the constructed degree n Lagrange polynomial and the approximation
+
+    # the final polynomial and answer
+    P_x = sy.lambdify(x, Px)
+    x_r = P_x(x_p)
+
+    # printing out the constructed Lagrange polynomial and problem specifics
     if p_out:
+        print('\nGiven points: ')
         for i in range(len(polynomial)):
-            start = '\nP(x) = ' if i == 0 else ' '*len('P(x) = ')
+            print(f'x_{i} = {p[i].x}   f(x_{i}) = {p[i].fx}')
+
+        print(f'\nWe construct the Lagrange interpolated polynomial of degree {n} as:\n[Simplified]:')
+        sy.pprint(f'P(x) = {sy.expand(Px)}')
+        
+        for i in range(len(polynomial)):
+            start = '\n[Expanded]: \nP(x) = ' if i == 0 else ' '*len('P(x) = ')
             print(f'{start} {polynomial[i]} + ')
-        print(f'\nP({x_p}) = {x_r}\n')
+        
+        print(f'\nP({x_p}) = {P_x(x_p)}\n')
         
     return x_r
 
@@ -59,3 +74,4 @@ if __name__ == "__main__":
                     Point(8.6, 18.50515), Point(8.7, 18.82091)]
 
     fx_p = lagrange_interpolation(known_points, x_p, degree)
+
