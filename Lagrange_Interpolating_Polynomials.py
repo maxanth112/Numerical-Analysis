@@ -99,6 +99,8 @@ def lagrange_error_bound(fx, p : list, x_p : float, n : int, p_out : bool = True
 
     return ae
 
+
+
 def find_max_save_value(fx, values : list) -> list:
     '''
     Returns the point that achieves the maximum value on a given interval and said max value
