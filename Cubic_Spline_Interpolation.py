@@ -1,3 +1,5 @@
+import sympy as sp
+
 class Spline: 
     def __init__(self, a, b, c, d):
         self.a = a
@@ -62,24 +64,59 @@ def cubic_spline_interpolation(x : list, fx : list):
                 (Sx[i+1] - Sx[i])*h_i[i]**2/6)         
         for i in range(n - 1)]
 
+    # print the results 
+    index = 0
+    for spline in Sx_i: 
+        print('Spline Interpolation:')
+        print(f'S(x) =>\n a_{index} = {spline.a}\n b_{index} = {spline.b}')
+        print(f' c_{index} = {spline.c}\n d_{index} = {spline.d}\n')
+        index += 1
+
     return Sx_i
+
+
+def spline_error_approximation(func, x_e : int, x_in : list, fx : list):
+
+    x = sp.Symbol('x')
+    Sxi    = cubic_spline_interpolation(x_in, fx)[0] # just fo the first one 
+    f_Sxi  = Sxi.a + Sxi.b*(x - x_in[0]) + Sxi.c*(x - x_in[0])**2 + Sxi.d*(x - x_in[0])**3
+    
+    header = [f'({x_e})', f"'({x_e})"]
+    print('Error Evaluation: ')
+    for i in range(len(header)):
+
+        ff = sp.lambdify(x, func)
+        ss = sp.lambdify(x, f_Sxi)
+        if i == 1:
+            ff = sp.lambdify(x, sp.diff(f_Sxi, x))
+            ss = sp.lambdify(x, sp.diff(func, x))
+        print(f'f{header[i]} = {ff(x_e)}')
+        print(f'S{header[i]} = {ss(x_e)}')
+        print(f'f_err  = |S{header[i]} - f{header[i]}|\n       = {abs(ff(x_e) - ss(x_e))}\n')
+
+    return 
+
 
 
 # funciton calls
 if __name__ == "__main__":
     
     # setting the question 
-    q = 2
-    
+    q = 1
+    x = sp.Symbol('x')
+
     if q == 1:    
-        x = [8.3, 8.6]
-        y = [17.56492, 18.50515]
+        func = x*sp.log(x)
+        e    = 8.4
+        x    = [8.3, 8.6]
+        fx   = [17.56492, 18.50515]
 
     if q == 2:
-        x = [0.8, 1.0]
-        y = [0.22363362, 0.65809197]
+        func = sp.sin(sp.exp(x) - 2)
+        e    = 0.9
+        x    = [0.8, 1.0]
+        fx   = [0.22363362, 0.65809197]
 
-    spline = cubic_spline_interpolation(x, y)
-    for i in range(len(spline)): 
-        print(f'\nS(x) =>\n a_{i} = {spline[i].a}\n b_{i} = {spline[i].b}')
-        print(f' c_{i} = {spline[i].c}\n d_{i} = {spline[i].d}')
+    spline = cubic_spline_interpolation(x, fx)
+
+    error = spline_error_approximation(func, e, x, fx)
