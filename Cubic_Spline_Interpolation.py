@@ -8,6 +8,7 @@ class Spline:
         self.d = d
 
 
+
 def cubic_spline_interpolation(x : list, fx : list, dfs = 0):
     ''' Max Wiesner
         3/2/21
@@ -21,9 +22,11 @@ def cubic_spline_interpolation(x : list, fx : list, dfs = 0):
     --- Parameters ---
     x    : list of x coordinates for the spline interpolation
     fx   : list of the outputs from the previous list of x values
+    dfs  : (optional) if doing a natural cubic spline interpolation leave empty, if
+            clamped, supply the initial and nth derivative 
     
     --- Returns ---
-    Sx_i : the respective cubic spline approximations '''
+    Sx   : the respective cubic spline approximation coefficients '''
 
 
     n = len(x)
@@ -73,7 +76,8 @@ def cubic_spline_interpolation(x : list, fx : list, dfs = 0):
     return Sx
 
 
-def spline_error_approximation(func, x_e : int, x_in : list, fx : list):
+
+def spline_error_approximation(func, x_e : int, x_in : list, fx : list, dfs = 0):
     '''
     Finds the actual error from the above cubic spline interpolation method, and the error
     of its derivative
@@ -86,13 +90,15 @@ def spline_error_approximation(func, x_e : int, x_in : list, fx : list):
     x_e  : the value that we will use to estimate the error and compare outputs
     x_in : list of input values for the cubic spline interpolation 
     fx   : list of the outputs from the previous list of x values
-    
+    dfs  : (optional) if doing a natural cubic spline interpolation leave empty, if
+            clamped, supply the initial and nth derivative 
+
     --- Returns ---
-    void : doesn't return anything, for printing out an analysis of the interpolation '''
+    None : for printing out an analysis of the interpolation '''
 
 
-    x = sp.Symbol('x')
-    Sxi    = cubic_spline_interpolation(x_in, fx)[0] # just fo the first one 
+    x      = sp.Symbol('x')
+    Sxi    = cubic_spline_interpolation(x_in, fx, dfs)[0] # just fo the first one 
     f_Sxi  = Sxi.a + Sxi.b*(x - x_in[0]) + Sxi.c*(x - x_in[0])**2 + Sxi.d*(x - x_in[0])**3
     
     header = [f'({x_e})', f"'({x_e})"]
@@ -108,7 +114,7 @@ def spline_error_approximation(func, x_e : int, x_in : list, fx : list):
         print(f'S{header[i]} = {ss(x_e)}')
         print(f'f_err  = |S{header[i]} - f{header[i]}|\n       = {abs(ff(x_e) - ss(x_e))}\n')
 
-    return 
+    return None
 
 
 
@@ -134,6 +140,5 @@ if __name__ == "__main__":
         df   = [2.1691753, 2.0466965]
 
     # spline = cubic_spline_interpolation(x, fx)
-    
-    spline = cubic_spline_interpolation(x, fx, df)
-    # error = spline_error_approximation(func, e, x, fx)
+    # spline = cubic_spline_interpolation(x, fx, df)
+    error = spline_error_approximation(func, e, x, fx, df)
