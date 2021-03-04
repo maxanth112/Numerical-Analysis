@@ -133,22 +133,20 @@ if __name__ == "__main__":
     x = sy.Symbol('x')
     
     if q == 1:
-        # finding the interpolating polynomial and the error
-        # P(x)
         x_p = 8.4
         degree = 2
         known_points = [Point(8.1, 16.9441), Point(8.3, 17.56492), 
                         Point(8.6, 18.50515), Point(8.7, 18.82091)]
         # error
         fx = lambda x : sy.log(x)*x
-        error = lagrange_error_bound(fx, known_points, x_p, degree)
+       
 
     if q == 2:
-        # P(x)
         x_p = -1/3
         degree = 2
         known_points = [Point(-3/4, -0.07181250), Point(-1/2, -0.02475),
                         Point(-1/4, 0.3349375), Point(0, 1.101)]
         # error
         fx = lambda x : x**3 + 4.001*x**2 + 4.002*x + 1.101
-        error = lagrange_error_bound(fx, known_points, x_p, degree)
+    
+    error = lagrange_error_bound(fx, known_points, x_p, degree)
