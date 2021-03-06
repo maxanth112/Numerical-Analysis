@@ -9,7 +9,7 @@ def newton_divided_difference(points : list):
     the points must be unique
 
     --- Parameters ---
-    points : a 2D list of points in the format of [ [x1, fx1], [x2, fx2] ]
+    points : a 2D list of points in the format of [[x1, fx1], [x2, fx2]]
 
     --- Returns ---
     None   : is used to generate a polynomial of degree n, and print the polynomial to the terminal '''

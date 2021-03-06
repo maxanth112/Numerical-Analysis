@@ -122,7 +122,7 @@ def spline_error_approximation(func, x_e : int, x_in : list, fx : list, dfs = 0)
 if __name__ == "__main__":
     
     # setting the question 
-    q = 2
+    q = 1
     x = sp.Symbol('x')
 
     if q == 1:    
@@ -130,7 +130,7 @@ if __name__ == "__main__":
         e    = 8.4
         x    = [8.3, 8.6]
         fx   = [17.56492, 18.50515]
-        df   = [1.116256, 1.151872]
+        df   = [3.116256, 3.151762]
 
     if q == 2:
         func = sp.sin(sp.exp(x) - 2)
