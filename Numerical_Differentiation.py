@@ -1,9 +1,11 @@
 import sympy as sp
 
-def numerical_differentiation(p : list, method):
+def numerical_differentiation(p : list, func, m = 'both'):
     ''' Max Wiesner
-        3/8/21
-    Func Description
+        3/9/21
+    Computes the the forward and backward numerical differentiations of the given points when
+    possible, and the error bound, and actual error. Results are formatted and printed in a 
+    table.
     
     --- Required ---
     the x coordinate in the dictionary of p must be evenly spaced apart, that is for any
@@ -11,79 +13,112 @@ def numerical_differentiation(p : list, method):
     be at least 2 p in the list of p such that we are able to determine h
     
     --- Parameters ---
-    p : a list of p [x, fx], in the form of [[x_0, fx_0], ..., [x_n, fx_n]]
-    method : the divided difference method to be performed; 'f' => forward or 'b' => backward
+    p : (points) a list of p [x, fx], in the form of [[x_0, fx_0], ..., [x_n, fx_n]]
+    m : (method) the divided difference m to be performed; 'forward', 'backward', 'both'
 
     --- Returns ---
-    dfx    : list of list of estimations for the derivative of the given p, calculated by the
-             choosen methods '''
+    p : (updated points) list of list of estimations for the derivative of the given p, 
+        calculated by the choosen m, adding index 2 for forward estimation, and index 3
+        for backward estimation, returned as displayed by the functions last print statement '''
+
 
     sorted(p, key = lambda x : x[0])
+    x = sp.Symbol('x')
+    df = sp.diff(func, x)
+    dfx = sp.lambdify(x, df)
+    df2 = sp.diff(df, x)
     n = len(p)
     h = p[1][0] - p[0][0]
-    dfx = [[0, 0] for i in range(n)]
+    p = [i + [None]*8 for i in p]
 
-    print(f'[Given]:\nh = {p[1][0]} - {p[0][0]}')
+    print(f'\n[Given]:\nh = {p[1][0]} - {p[0][0]}')
     for i in range(n):
         print(f'f({p[i][0]}) = {p[i][1]}')
+    
+    print(f'\n[Derivative Calcs]:')
+    h_dir = -1 if h < 0 else 1   
+    opt = [{ 'method' : 'Forward', 'index' : 2, 'sign' : 1, 'bound' : n },
+           { 'method' : 'Backward', 'index' : 5, 'sign' : -1, 'bound' : -1}]
 
-    print(f'\n[Calculations]:')
-    for i in range(n): 
+    for i in range(len(opt)):
+        m = opt[i]
+        print(f'{m["method"]}')
+        for j in range(n):
+            if (j + m['sign']*h_dir) == m['bound']:
+                print(f' f\'({p[j][0]}) = can\'t be calculated since f(x_i {"-" if m["sign"] < 1 else "+"} h) wasn\'t provided.')
+                p[j][m['index'] + 1] = None
+                p[j][m['index'] + 2] = None
+            else: 
+                fxh = p[j + h_dir*m['sign']][1]
+                dfi = m['sign']*(fxh - p[j][1])/h
+                p[j][m['index']] = dfi
+                print(f' f\'({p[j][0]}) = {dfi:<1.5f}')
 
-        fx_i = p[i][1]
-        h_dir = -1 if h < 0 else 1         
-        if method == 'forward' or method == 'both': 
+    print(f'\n[Error Calcs]:')
+    for i in range(len(opt)):
+        m = opt[i]
+        print(f'{m["method"]}')
 
-            if (i + h_dir) == n:
-                print(f'[F] f\'({p[i][0]}) = can\'t be calculated using forward method since f(x_i + h) wasn\'t provided.')
-            else:
-                fx_i_ph = p[i + h_dir][1]
-                dfx_i = ( fx_i_ph - fx_i ) / h
-                dfx[i][0] = dfx_i            
-                print(f'[F] f\'({p[i][0]}) = {dfx_i:<1.5f}')
-
-        if method == 'backward' or method == 'both':
-
-            if (i - h_dir) == -1:
-                print(f'[B] f\'({p[i][0]}) = can\'t be calculated using backward method since f(x_i - h) wasn\'t provided.')
-            else:
-                fx_i_mh = p[i - h_dir][1]
-                dfx_i = ( fx_i - fx_i_mh ) / h
-                dfx[i][1] = dfx_i
-                print(f'[B] f\'({p[i][0]}) = {dfx_i:<1.5f}')
+        for j in range(n):
+            print(f' for f\'({p[j][0]}) = {p[j][1]:<1.5f}')
+            if (j + m['sign']*h_dir) == m['bound']:
+                print(f'  error of f\'({p[j][0]}) = can\'t be calculated since f(x_i {"-" if m["sign"] < 1 else "+"} h) wasn\'t provided.')
+                p[j][m['index'] + 1] = None
+                p[j][m['index'] + 2] = None
+            else: 
+                [xm, fxm] = find_max_save_value(df2, [p[j][0], p[j + m['sign']][0]])
+                p[j][m['index'] + 1] = sp.Abs(h/2)*fxm # store bound
+                p[j][m['index'] + 2] = sp.Abs(p[j][m['index']] - dfx(p[j][0])) # store actual 
+                print(f'  bound  : Pick x = {xm} to maximize |h/{2}*{df2}| = {p[j][m["index"] + 1]:1.5f}')
+                print(f'  actual : |{p[j][1]} - {df}| =  |{p[j][m["index"]]:<1.5f} - {dfx(p[j][0]):<1.5f}| = {p[j][m["index"] + 2]:<1.5f}')
 
     # print the final table
     for i in range(n):      
         if i == 0:
-            print('\n[Final Table]:')
-            print(f' {"-"*47}')
-            print(f'|{" x":<8}|{" f(x)":<8}|{" [F] df(x)":<14}|{" [B] df(x)":<14}|')
-            print(f' {"-"*47}')
-        forw = f'{dfx[i][0]:<13.5f}' if dfx[i][0] != 0 else f'na{" ".ljust(11)}'
-        back = f'{dfx[i][1]:<13.5f}' if dfx[i][1] != 0 else f'na{" ".ljust(11)}'
-        print(f'|{p[i][0]:<8}|{p[i][1]:<8}| {forw}| {back}|')
-    print(f' {"-"*47}')
+            print('\n[Final Table]:   [B] = Backward, [F] = Forward')
+            print(f' {"-"*107}')
+            print(f'|{" x":<8}|{" f(x)":<8}|{" [F] df(x)":<14}| { "[F] e bound":<13}| {"[F] e actual":<13}| {"[B] df(x)":<13}| {"[B] e bound":<13}| {"[B] e actual":<13}|')
+            print(f' {"-"*107}')
 
-    return dfx
+        na = f'na{" ".ljust(11)}'
+        cond_f = p[i][2] != None
+        cond_b = p[i][5] != None
+        df_f = f'{p[i][2]:<13.5f}' if cond_f else na
+        ef_b = f'{p[i][3]:<13.5f}' if cond_f else na
+        ef_a = f'{p[i][4]:<13.5f}' if cond_f else na
+        df_b = f'{p[i][5]:<13.5f}' if cond_b else na
+        eb_b = f'{p[i][6]:<13.5f}' if cond_b else na
+        eb_a = f'{p[i][7]:<13.5f}' if cond_b else na
+
+        print(f'|{p[i][0]:<8}|{p[i][1]:<8}| {df_f}| {ef_b}| {ef_a}| {df_b}| {eb_b}| {eb_a}|')
+    print(f' {"-"*107}\n')
+
+    return p
 
 
-#
-def numerical_differentiation_error(p : list, method):
+
+
+def find_max_save_value(fx, values : list) -> list:
     '''
-    Func Description
-    
-    --- Required ---
-    the x coordinate in the dictionary of p must be evenly spaced apart, that is for any
-    i = 0, ..., n it is that x_(i + 1) - x_i = h for the constant integer h. There myst also
-    be at least 2 p in the list of p such that we are able to determine h
-    
+    Returns the point that achieves the maximum value on a given interval and said max value
+
     --- Parameters ---
-    p : a list of p [x, fx], in the form of [[x_0, fx_0], ..., [x_n, fx_n]]
-    method : the divided difference method to be performed; 'f' => forward or 'b' => backward
+    fx     : function that is being maximized
+    values : inputs to the function fx
 
     --- Returns ---
-    dfx    : list of list of estimations for the derivative of the given p, calculated by the
-             choosen methods '''
+    [max_i, min_i] : maximum point in the first index, maximum value in the next '''
+
+    fx = sp.lambdify(x, fx)
+    max_v = 0
+    max_i = 0
+    for i in values:
+        curr_v = sp.Abs(fx(i))
+        if (curr_v > max_v):
+            max_v = curr_v
+            max_i = i
+
+    return [max_i, max_v]
 
 
 
@@ -93,23 +128,15 @@ if __name__ == "__main__":
     
     # setting the question 
     x = sp.Symbol('x')
-    q = 2
+    q = 1
 
     if q == 1: 
-        p = [
-            [1/2, 0.4794],
-            [6/10, 0.5646],
-            [7/10, 0.6442] 
-        ]
-
+        p = [ [1/2, 0.4794], [6/10, 0.5646], [7/10, 0.6442] ]
+        fx = sp.sin(x)
     if q == 2: 
-        p = [
-            [-3/10, 1.9507],
-            [-2/10, 2.0421],
-            [-1/10, 2.0601] 
-        ]
+        p = [ [-3/10, 1.9507], [-2/10, 2.0421], [-1/10, 2.0601] ]
 
-    numerical_differentiation(p, 'both')
+    numerical_differentiation(p, fx)
 
 
         
