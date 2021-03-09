@@ -34,12 +34,11 @@ def numerical_differentiation(p : list, func, m = 'both'):
     print(f'\n[Given]:\nh = {p[1][0]} - {p[0][0]}')
     for i in range(n):
         print(f'f({p[i][0]}) = {p[i][1]}')
-    
-    print(f'\n[Derivative Calcs]:')
     h_dir = -1 if h < 0 else 1   
     opt = [{ 'method' : 'Forward', 'index' : 2, 'sign' : 1, 'bound' : n },
            { 'method' : 'Backward', 'index' : 5, 'sign' : -1, 'bound' : -1}]
 
+    print(f'\n[Derivative Calcs]:')
     for i in range(len(opt)):
         m = opt[i]
         print(f'{m["method"]}')
@@ -89,7 +88,6 @@ def numerical_differentiation(p : list, func, m = 'both'):
         df_b = f'{p[i][5]:<13.5f}' if cond_b else na
         eb_b = f'{p[i][6]:<13.5f}' if cond_b else na
         eb_a = f'{p[i][7]:<13.5f}' if cond_b else na
-
         print(f'|{p[i][0]:<8}|{p[i][1]:<8}| {df_f}| {ef_b}| {ef_a}| {df_b}| {eb_b}| {eb_a}|')
     print(f' {"-"*107}\n')
 
