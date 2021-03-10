@@ -1,4 +1,6 @@
 import sympy as sp
+from Lagrange_Interpolating_Polynomials import find_max_save_value
+
 
 def numerical_differentiation(p : list, func, m = 'both'):
     ''' Max Wiesner
@@ -9,8 +11,8 @@ def numerical_differentiation(p : list, func, m = 'both'):
     
     --- Required ---
     the x coordinate in the dictionary of p must be evenly spaced apart, that is for any
-    i = 0, ..., n it is that x_(i + 1) - x_i = h for the constant integer h. There myst also
-    be at least 2 p in the list of p such that we are able to determine h
+    i = 0, ..., n it is that x_(i + 1) - x_i = h for the constant integer h. There must also
+    be at least 2 points in the list of p such that we are able to determine h
     
     --- Parameters ---
     p : (points) a list of p [x, fx], in the form of [[x_0, fx_0], ..., [x_n, fx_n]]
@@ -53,6 +55,7 @@ def numerical_differentiation(p : list, func, m = 'both'):
                 p[j][m['index']] = dfi
                 print(f' f\'({p[j][0]}) = {dfi:<1.5f}')
 
+
     print(f'\n[Error Calcs]:')
     for i in range(len(opt)):
         m = opt[i]
@@ -92,31 +95,6 @@ def numerical_differentiation(p : list, func, m = 'both'):
     print(f' {"-"*107}\n')
 
     return p
-
-
-
-
-def find_max_save_value(fx, values : list) -> list:
-    '''
-    Returns the point that achieves the maximum value on a given interval and said max value
-
-    --- Parameters ---
-    fx     : function that is being maximized
-    values : inputs to the function fx
-
-    --- Returns ---
-    [max_i, min_i] : maximum point in the first index, maximum value in the next '''
-
-    fx = sp.lambdify(x, fx)
-    max_v = 0
-    max_i = 0
-    for i in values:
-        curr_v = sp.Abs(fx(i))
-        if (curr_v > max_v):
-            max_v = curr_v
-            max_i = i
-
-    return [max_i, max_v]
 
 
 

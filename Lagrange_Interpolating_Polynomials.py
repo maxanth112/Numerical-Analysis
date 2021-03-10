@@ -1,4 +1,4 @@
-import sympy as sy
+import sympy as sp
 
 class Point: 
     def __init__(self, x, fx):
@@ -29,7 +29,7 @@ def lagrange_interpolation(p : list, x_p : float, n : int, p_out : bool = True) 
     if (n < 1):
         raise ValueError('Degree has to be at least 1.')
 
-    p = sorted(p, key = lambda point : sy.Abs(x_p - point.x))
+    p = sorted(p, key = lambda point : sp.Abs(x_p - point.x))
     Px = 0.0    
     for i in range(n + 1):        
         L_i = 1
@@ -39,12 +39,12 @@ def lagrange_interpolation(p : list, x_p : float, n : int, p_out : bool = True) 
         Px += p[i].fx*L_i
 
     # the final polynomial and answer
-    P_x = sy.lambdify(x, Px)
+    P_x = sp.lambdify(x, Px)
     x_r = P_x(x_p)
 
     # printing out the constructed Lagrange polynomial and problem specifics
     if p_out:
-        print(f'\n[Lagrange Polynomial]:\nP_{n}(x) = {sy.expand(Px)}\nP_{n}({x_p}) = {P_x(x_p)}\n')
+        print(f'\n[Lagrange Polynomial]:\nP_{n}(x) = {sp.expand(Px)}\nP_{n}({x_p}) = {P_x(x_p)}\n')
         
     return x_r
 
@@ -73,17 +73,17 @@ def lagrange_error_bound(fx, p : list, x_p : float, n : int, p_out : bool = True
     # actual error
     estimated = lagrange_interpolation(p, x_p, n)
     actual = fx(x_p)
-    ae = sy.Abs(actual - estimated)
+    ae = sp.Abs(actual - estimated)
 
     if (p_out):
         # maximize the left side of the error funciton 
         max_left = fx(x)
         for i in range(n + 1): 
-            max_left = sy.diff(max_left, x)
+            max_left = sp.diff(max_left, x)
 
-        p = sorted(p, key = lambda point : sy.Abs(x_p - point.x))
+        p = sorted(p, key = lambda point : sp.Abs(x_p - point.x))
         bound = [p[0].x, p[n].x]
-        max_left /= sy.factorial(n + 1)
+        max_left /= sp.factorial(n + 1)
         max_left_o = find_max_save_value(max_left, bound)
 
         # maximize the right size of the error funciton 
@@ -93,7 +93,7 @@ def lagrange_error_bound(fx, p : list, x_p : float, n : int, p_out : bool = True
         max_right_o = find_max_save_value(max_right, [x_p])
        
         print(f'[Max Error]:\nme = (f^(n + 1))(xi)/(n + 1)!)*|(x - x_j)*(x - x_j+1)...|')
-        print(f'   = {sy.Abs(max_left)} * |{max_right}|')   
+        print(f'   = {sp.Abs(max_left)} * |{max_right}|')   
         print(f'   = {max_left_o[1]*max_right_o[1]:.12}\n')
         print(f'[Actual Error]:\nae = |actual - estimated|\n   = |{actual} - {estimated}|\n   = {ae:.12}\n')
 
@@ -112,11 +112,13 @@ def find_max_save_value(fx, values : list) -> list:
     --- Returns ---
     [max_i, min_i] : maximum point in the first index, maximum value in the next '''
 
-    fx = sy.lambdify(x, fx)
+    x = sp.Symbol('x')
+    fx = sp.lambdify(x, fx)
     max_v = 0
     max_i = 0
     for i in values:
-        curr_v = sy.Abs(fx(i))
+        curr_v = sp.Abs(fx(i))
+        print(f'f({i}) = {curr_v}')
         if (curr_v > max_v):
             max_v = curr_v
             max_i = i
@@ -128,7 +130,7 @@ def find_max_save_value(fx, values : list) -> list:
 # funciton calls
 if __name__ == "__main__":
     
-    x = sy.Symbol('x')
+    x = sp.Symbol('x')
 
     # setting the question 
     q = 2
@@ -138,7 +140,7 @@ if __name__ == "__main__":
         x_p = 8.4
         known_points = [Point(8.1, 16.9441), Point(8.3, 17.56492), 
                         Point(8.6, 18.50515), Point(8.7, 18.82091)]
-        fx = lambda x : sy.log(x)*x
+        fx = lambda x : sp.log(x)*x
 
     if q == 2:
         x_p = -1/3
