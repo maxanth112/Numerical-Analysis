@@ -88,18 +88,18 @@ def three_point_error(p : list, func) -> list:
         p[i][4] = sp.Abs((h**2)/d)*fxm # store bound
         p[i][5] = sp.Abs(p[i][2] - dfx(p[i][0])) # store actual 
 
-        print(f'  bound  : Pick x = {xm} to maximize |(h^2/3)*{df3}| = {p[i][4]:1.5f}')
-        print(f'  actual : |{p[i][1]:<1.5f} - {df}| =  |{p[i][1]:<1.5f} - {dfx(p[i][0]):<1.5f}| = {p[i][5]:<1.5f}')
+        print(f'  bound  : Pick x = {xm} to maximize |(h^2/3)*{df3}| = {p[i][4]:1.6f}')
+        print(f'  actual : |{p[i][1]:<1.5f} - {df}| =  |{p[i][1]:<1.5f} - {dfx(p[i][0]):<1.6f}| = {p[i][5]:<1.6f}')
 
     # print the final table
     for i in range(n):      
         if i == 0:
             print('\n[Final Table]:')
-            print(f' {"-"*52}')
-            print(f'|{" x":<8}|{" f(x)":<8}|{" df(x)":<10}| { " e actual":<10}| {" e bound":<10}|')
-            print(f' {"-"*52}')
-        print(f'|{p[i][0]:<8}|{p[i][1]:<8.5f}| {p[i][2]:<9.5f}|  {p[i][5]:<9.5f}|  {p[i][4]:<9.5f}|')
-    print(f' {"-"*52}\n')
+            print(f' {"-"*54}')
+            print(f'|{" x":<8}|{" f(x)":<8}| {" df(x)":<10}| { " e actual":<11}| {" e bound":<11}|')
+            print(f' {"-"*54}')
+        print(f'|{p[i][0]:<8}|{p[i][1]:<8.5f}| {p[i][2]:<9.5f}|  {p[i][5]:<10.6f}|  {p[i][4]:<10.6f}|')
+    print(f' {"-"*54}\n')
 
     return p
 
@@ -111,12 +111,17 @@ if __name__ == "__main__":
     
     # setting the question 
     x = sp.Symbol('x')
-    q = 2
+    q = 'b'
 
-    if q == 1: 
+    if q == 'a': 
         p = [ [1.1, 9.025013], [1.2, 11.02318], [1.3, 13.46374], [1.4, 16.44465] ]
         fx = sp.exp(2*x)
-    if q == 2: 
+
+    if q == 'b': 
+        p = [ [7.4, -68.3193], [7.6, -71.6982], [7.8, -75.1576], [8.0, -78.6974] ]
+        fx = sp.ln(x + 2) - (x + 1)**2
+
+    if q == 'c': 
         p = [ [-3/10, -0.27652], [-2/10, -0.25074], [-1/10, -0.16134], [0, 0] ]
         fx = sp.exp(2*x) - sp.cos(2*x)
 

@@ -104,12 +104,17 @@ if __name__ == "__main__":
     
     # setting the question 
     x = sp.Symbol('x')
-    q = 1
+    q = 'b'
 
-    if q == 1: 
+    if q == 'a': 
         p = [ [1/2, 0.4794], [6/10, 0.5646], [7/10, 0.6442] ]
         fx = sp.sin(x)
-    if q == 2: 
+
+    if q == 'b':
+        p = [ [1, 1], [1.2, 1.2625], [1.4, 1.6595] ]
+        fx = sp.exp(x) - 2*x**2 + 3*x - 1
+
+    if q == 'c': 
         p = [ [-3/10, 1.9507], [-2/10, 2.0421], [-1/10, 2.0601] ]
 
     numerical_differentiation(p, fx)
