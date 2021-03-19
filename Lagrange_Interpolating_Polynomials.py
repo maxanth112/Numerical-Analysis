@@ -118,7 +118,7 @@ def find_max_save_value(fx, values : list) -> list:
     max_i = 0
     for i in values:
         curr_v = sp.Abs(fx(i))
-        print(f'f({i}) = {curr_v}')
+        # print(f'f({i}) = {curr_v}')
         if (curr_v > max_v):
             max_v = curr_v
             max_i = i
