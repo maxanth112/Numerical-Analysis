@@ -31,6 +31,7 @@ function p = Newton_Raphson_Method(f, p_0, N, e)
     
     i = 1;
     while i <= N
+        %fprintf("p_0 = %s \n f = %s \n df = %s \n", p_0, f, df);
         p = p_0 - f(p_0)/df(p_0);
         fprintf("\np_%d = %-5.10f", i, p);        
         if abs(p - p_0) < e

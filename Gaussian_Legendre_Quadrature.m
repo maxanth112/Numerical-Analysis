@@ -1,4 +1,4 @@
-function [points, weights] = Gaussian_Legendre_Quadrature(n, a, b)
+function [weights, points, apprx_ans] = Gaussian_Legendre_Quadrature(func, n, a, b)
 
     % used matlab code as reference, this substitutes table 4.12
     % simplify n instances for recurrence formula
@@ -31,8 +31,11 @@ function [points, weights] = Gaussian_Legendre_Quadrature(n, a, b)
     points = (a*(1 - Pn) + b*(1 + Pn)) / 2;      
     % weights of the gaussian quadrature 
     weights = (b - a)./( (1 - Pn.^2).*dJf.^2)*(n2/n1)^2;
-    
-    
+
+    apprx_ans = 0;
+    for i = 1:n
+        apprx_ans = apprx_ans + func(points(i))*weights(i);
+    end
 end
 
 
